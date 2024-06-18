@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdbool.h>
 #include <string.h>
-//#include <ncurses.h>
-#include "Assembly.s"
-#include "EasyPIO.h"  // AsegÃºrate de tener esta librerÃ­a para controlar los GPIO
+#include <ncurses.h>
+//#include "Assembly.s"
+#include "EasyPIO.h"  
+#include "stdbool.h" 
 
 
 // Definiciones
@@ -16,7 +16,7 @@
 // Tabla de datos
 unsigned char TablaCh[] = {0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81};
 
-// Tabla para patrones de expansiÃ³n de onda
+// Tabla para patrones de expansión de onda
 unsigned char TablaExpansiva[8][8] = {
     {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},  // 1 LED
     {0x03, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},  // 2 LEDs
@@ -42,6 +42,7 @@ void keyHit(int index);
 void pinSetup(void);
 void ledShow(unsigned char output);
 void turnOff();
+int Leds (int number);
 
 const unsigned char led[NUM_LEDS] = {14, 15, 18, 23, 24, 25, 8, 7}; // Pines de los LEDs
 int delayTime[] = {10000, 10000, 10000, 10000};
@@ -81,7 +82,7 @@ int menu(void) {
                     printf("\nSaliendo. . .\n") ;
                     break;
                 default:
-                    printf("\nElija una opciÃ³n valida") ;
+                    printf("\nElija una opción valida") ;
         }
     } while(opc != 5) ;
 }
@@ -117,13 +118,25 @@ int presskey(void) {
 }
 
 int delay(unsigned long int *a) {
-    for (int i = delayTime[&a]; i > 0; i -= 100) {
-        usleep(100); // Retardo en microsegundos
-        if (keyHit(&a)) {
-            return 0; // Si se presiono una tecla, salir
+    initscr();
+    cbreak();
+    noecho();
+    nodelay(stdscr, TRUE);
+    keypad(stdscr, TRUE);
+    
+    int ch = getch();
+    
+    if (ch == KEY_DOWN){
+        *a+= 50;
         }
-    }
-    return 1; // Continuar si no se presiono una tecla
+    
+    if (*a > 50 && ch == KEY_UP){
+        *a-= 50;
+        }
+    
+    usleep (*a *1000);
+    
+    endwin();
 }
 
 
@@ -137,7 +150,7 @@ void disp_binary(int i) {
     }
     fflush(stdout); // Vaciar el buffer de salida
     printf("\n");
-    Leds(i) ;
+    //Leds(i) ;
 }
 
 void autof(void) {
@@ -267,20 +280,20 @@ void expansion_ondas(void) {
     }
 }
 
-// Verificar la pulsaciÃ³n de teclas
-int keyHit(int index) {
-    int ch;
+// Verificar la pulsación de teclas
+/*void keyHit(int index) {
+    int ch ;
     ch = getchar(); // Leer caracter
 
     if (ch == 'u' && delayTime[index] > 100) {
         delayTime[index] -= 100; // Aumentar la velocidad
-    } else if (ch == 'd') {
-        delayTime[index] += 100; // Disminuir la velocidad
-    } else {
-        return 1; // Indica que se presionó una tecla que no es 'u' ni 'd'
+    }else if (ch == 'd'){
+         delayTime[index] += 100; 
+    }else {
+        return 1;
     }
-    return 0; // No se presionó una tecla de salida
-}
+    return 0;
+}*/
 
 // Inicializar los pines
 void pinSetup(void) {
@@ -317,21 +330,10 @@ int main(void) {
     pioInit();
     pinSetup();
 
-    char CLAVE[] = "12345";
-    char clave[6] ;
-
-    char caracter ;
-
     int intento = 0 ;
-
-    for (int i = 0; i < NUM_LEDS ; i++) {
-        pinMode(led[i], OUTPUT);
-    }
     
-    // char setPassword[PASSWORD_LENGTH] = {'1', '2', '3', '4', '5'}; // ContraseÃ±a predeterminada
+    // char setPassword[PASSWORD_LENGTH] = {'1', '2', '3', '4', '5'}; // Contraseña predeterminada
     // char passwordInput[PASSWORD_LENGTH]; // Arreglo para la contraseÃ±a ingresada por el usuario
-
-
 
     do {
         i = 0;
@@ -366,7 +368,7 @@ int main(void) {
         }
         refresh();
 
-    } while (intentos < 3 && ingresar == 0);
+    } while (intentos < MAX_ATTEMPTS && ingresar == 0);
 
     endwin(); // Finalizar pantalla
 
@@ -381,6 +383,12 @@ int main(void) {
 
 
 
+
+
+
+
+
+    /*
     while (intento < MAX_ATTEMPTS) {
         ingreso(passwordInput);
         
@@ -391,7 +399,7 @@ int main(void) {
             continue;
         }
         
-        // Verificar contraseÃ±a
+        // Verificar contraseña
         if (strcmp(setPassword, passwordInput) == 0) {
             printf("\nBienvenido al sistema ! ! !\n");
             menu();
@@ -403,10 +411,11 @@ int main(void) {
     }
 
     if(intento > MAX_ATTEMPTS){
-        printf("Ha superado el nÃºmero mÃ¡ximo de intentos fallidos.\n");
+        printf("Ha superado el número máximo de intentos fallidos.\n");
         return 1;
     }
     
     return 0;
 }
-
+*/
+}
