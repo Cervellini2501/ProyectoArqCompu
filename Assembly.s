@@ -1,11 +1,14 @@
+.text
+
+.extern disp_binary
+.extern Leds
+.extern delay
+
 .global simulador_balizas
 
-.equ NUM_CYCLES, 10
-
-.text
 simulador_balizas:
     PUSH    {LR}            // Guardar el registro de enlace
-    MOV     R0, #NUM_CYCLES // Cargar el número de ciclos en R0
+    MOV     R0, #10         // Cargar el número de ciclos en R0
     MOV     R1, #0          // Inicializar el contador de ciclos en R1
 
 init_balizas:
@@ -27,23 +30,17 @@ loop_start:
     BL      delay           // Llamar a la función delay
 
     ADD     R1, R1, #1      // Incrementar el contador de ciclos
-    CMP     R1, R0          // Comparar el contador de ciclos con NUM_CYCLES
-    BLT     loop_start      // Si el contador de ciclos < NUM_CYCLES, repetir el bucle
+    CMP     R1, R0          // Comparar el contador de ciclos con 10
+    BLT     loop_start      // Si el contador de ciclos < 10, repetir el bucle
 
     ADD     SP, SP, #32     // Limpiar la pila
     POP     {LR}            // Restaurar el registro de enlace
-    MOV     PC, LR          // Retornar de la función
-
-print_balizas:
-    // Placeholder para la función print_balizas
     MOV     PC, LR          // Retornar de la función
 
 delay:
     // Placeholder para la función delay
     MOV     R0, #10         // Cargar el valor de retardo (10) en R0
     MOV     PC, LR          // Retornar de la función
-
-////////////////////////////////////
 
 
 .global expansion_ondas
@@ -54,7 +51,6 @@ TablaExpansiva:
     .word 0x03, 0x06, 0x0C, 0x18, 0x30, 0x60, 0xC0, 0x81
     // Agregar más datos según sea necesario
 
-.text
 expansion_ondas:
     PUSH    {LR}            // Guardar el registro de enlace
     MOV     R0, #1          // Inicializar numLedsEncendidos en R0
@@ -89,10 +85,6 @@ increment_numLeds:
 
 end_function:
     POP     {LR}            // Restaurar el registro de enlace
-    MOV     PC, LR          // Retornar de la función
-
-print_ondas:
-    // Placeholder para la función print_ondas
     MOV     PC, LR          // Retornar de la función
 
 delay:
