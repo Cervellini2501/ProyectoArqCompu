@@ -1,1 +1,2 @@
-# ProyectoArqCompu2
+# Arq-Compus
+Proyecto Arq-Compus
